@@ -147,6 +147,7 @@ public class UserServiceImpl implements UserService {
 		}
 		
 	}
+
 	@Override
 	public boolean resetPassword(ResetPasswordVo resetPasswordVo,HttpServletRequest request) {
 
@@ -159,14 +160,18 @@ public class UserServiceImpl implements UserService {
 		List<User> users= repository.findByIdAndPassword(userId, resetPasswordVo.getCurrentpassword());
 		
 		if(!CollectionUtils.isEmpty(users)) {
+			
 			user =users.get(0);
+		}else {
+			return false;
 		}
-		if(user != null) {
+		
+        	if(user.getPassword().equals(resetPasswordVo.getCurrentpassword())) {
         	
-        	user.setPassword(resetPasswordVo.getNewPassword());
+        		user.setPassword(resetPasswordVo.getNewPassword());
         	
-        	user.setCreated(DateUtil.getCurrentDate());
-        }
+        	    user.setCreated(DateUtil.getCurrentDate());
+        
         
 		try {
 			repository.save(user);
@@ -174,7 +179,7 @@ public class UserServiceImpl implements UserService {
 		}catch(Exception ex) {
 			return false;
 		}
+        	}
+        	return false;
 		
 	}
-
-}
